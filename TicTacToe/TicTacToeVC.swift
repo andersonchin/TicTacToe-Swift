@@ -13,6 +13,7 @@ class TicTacToeVC: UIViewController {
     let resetButton :UIButton = UIButton()
     let turnLabel = GlobalVars.turnLabel
     let turn = GlobalVars.whoseTurn
+    var whoStarts = 0
 
     
     
@@ -96,10 +97,11 @@ class TicTacToeVC: UIViewController {
     }
     
     @objc func reset() {
+        whoStarts += 1
+        GlobalVars.turn = whoStarts
         for i in GlobalVars.buttons {
             i.reset()
         }
-        GlobalVars.turn += 1
 //        GlobalVars.turn = GlobalVars.turn % 2
     }
     

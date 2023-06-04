@@ -60,7 +60,11 @@ class xOrOButton: UIButton {
     func reset() {
         tapped = false
         setTitle("", for: .normal)
-        GlobalVars.whoseTurn.text = "O's"
+        if GlobalVars.turn % 2 == 0 {
+            GlobalVars.whoseTurn.text = "O's"
+        } else {
+            GlobalVars.whoseTurn.text = "X's"
+        }
         self.isEnabled = true
 
     }
