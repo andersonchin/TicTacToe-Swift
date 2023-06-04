@@ -46,6 +46,8 @@ class TicTacToeVC: UIViewController {
     func configureLabel() {
         view.addSubview(turnLabel)
         view.addSubview(turn)
+        turnLabel.textColor = .black
+        turn.textColor = .black
         turnLabel.translatesAutoresizingMaskIntoConstraints = false
         turnLabel.text = "Turn"
         turn.translatesAutoresizingMaskIntoConstraints = false
