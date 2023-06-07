@@ -7,25 +7,28 @@
 
 import UIKit
 
+//delegate protocol
+protocol xOrOButtonDelegate {
+    func presentResult(alert: UIAlertController)
+    func callReset()
+}
+
 class xOrOButton: UIButton {
     
     var tapped : Bool = false
-    var vc : TicTacToeVC?
+    var delegate: xOrOButtonDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-    }
-    
-    init(vc:TicTacToeVC) {
-        super.init(frame: .zero)
-        self.vc = vc
         configure()
     }
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //configure button
     func configure() {
         translatesAutoresizingMaskIntoConstraints = false
         setTitleColor(.black, for: .normal)
@@ -34,9 +37,14 @@ class xOrOButton: UIButton {
         addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     
+    //functionality when button is tapped
     @objc func buttonTapped(){
+        //add X or O to board
         setToBoard()
+        
+        //check if victory has been reached
         if checkVictory() {
+            //determine winner
             var winner: String
             if self.currentTitle == "O" {
                 winner = "Noughts"
@@ -45,34 +53,36 @@ class xOrOButton: UIButton {
                 winner = "Crosses"
             }
             
+            //call delegate functions to present result and reset board
             let alert = UIAlertController(title: winner + " Wins", message: nil, preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: "Reset", style: .default, handler: { (alert: UIAlertAction!) in self.vc!.reset()}))
-            vc!.present(alert,animated:true)
+            alert.addAction(UIAlertAction(title: "Reset", style: .default, handler: { (alert: UIAlertAction!) in self.delegate?.callReset()}))
+            delegate?.presentResult(alert: alert)
             return
         }
+        //otherwise, check if draw condition is reached
         else if fullBoard() {
+            //call delegate functions to present result and reset board
             let alert = UIAlertController(title: "DRAW" , message: nil, preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: "Reset", style: .default, handler: { (alert: UIAlertAction!) in self.vc!.reset()}))
-            vc!.present(alert,animated:true)
+            alert.addAction(UIAlertAction(title: "Reset", style: .default, handler: { (alert: UIAlertAction!) in self.delegate?.callReset()}))
+            delegate?.presentResult(alert: alert)
         }
     }
     
+    //reset the current buttons properties
     func reset() {
         tapped = false
         setTitle("", for: .normal)
-        if GlobalVars.turn % 2 == 0 {
-            GlobalVars.whoseTurn.text = "O's"
-        } else {
-            GlobalVars.whoseTurn.text = "X's"
-        }
         self.isEnabled = true
 
     }
     
+    //update button to show X or O depending on whose turn it is
     func setToBoard() {
         if GlobalVars.turn % 2 == 0 {
             setTitle("O",for:.normal)
+            //set the current button as tapped (used to check for draw case)
             tapped = true
+            //change turn
             GlobalVars.turn = 1
             GlobalVars.whoseTurn.text = "X's"
         } else {
@@ -126,8 +136,10 @@ class xOrOButton: UIButton {
         return false
     }
     
+    //check for draw case
     func fullBoard() -> Bool{
         for i in GlobalVars.buttons {
+            //if any buttons are not yet tapped return false, else full board, return true
             if !i.tapped {
                 return false
             }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TicTacToeVC: UIViewController {
+class TicTacToeVC: UIViewController, xOrOButtonDelegate {
     
     let verticalStack : UIStackView = UIStackView()
     let resetButton :UIButton = UIButton()
@@ -16,7 +16,7 @@ class TicTacToeVC: UIViewController {
     var whoStarts = 0
 
     
-    
+    //call configure functions on load
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -26,6 +26,17 @@ class TicTacToeVC: UIViewController {
         addToStackView()
     }
     
+    //delegate functions when win/draw case is reached
+    func presentResult(alert: UIAlertController) {
+        present(alert,animated:true)
+    }
+    
+    func callReset() {
+        reset()
+    }
+    
+    
+    //configure with ui components
     func configureVertical() {
         view.addSubview(verticalStack)
         verticalStack.translatesAutoresizingMaskIntoConstraints = false
@@ -61,9 +72,7 @@ class TicTacToeVC: UIViewController {
             turn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
             turn.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
-        
     }
-    
     
     func configureHorizontal(horizontalStack: UIStackView) {
         horizontalStack.translatesAutoresizingMaskIntoConstraints = false
@@ -72,19 +81,24 @@ class TicTacToeVC: UIViewController {
         horizontalStack.axis = .horizontal
     }
     
+    //create custom button components and add to the nested UIStackView
     func addToStackView() {
         for _ in 1...3 {
             let horizontalStack = UIStackView()
             configureHorizontal(horizontalStack: horizontalStack)
             for _ in 1...3 {
-                let button = xOrOButton(vc: self)
+                let button = xOrOButton()
+                //set delegate
+                button.delegate = self
                 horizontalStack.addArrangedSubview(button)
+                //add buttons to global array
                 GlobalVars.buttons.append(button)
             }
             verticalStack.addArrangedSubview(horizontalStack)
         }
     }
     
+    //configure reset button
     func configureReset() {
         view.addSubview(resetButton)
         resetButton.translatesAutoresizingMaskIntoConstraints = false
@@ -98,13 +112,19 @@ class TicTacToeVC: UIViewController {
         ])
     }
     
+    //reset the button properties and change who starts next
     @objc func reset() {
         whoStarts += 1
         GlobalVars.turn = whoStarts
         for i in GlobalVars.buttons {
+            //call reset function within custom button component
             i.reset()
         }
-//        GlobalVars.turn = GlobalVars.turn % 2
+        if GlobalVars.turn % 2 == 0 {
+            GlobalVars.whoseTurn.text = "O's"
+        } else {
+            GlobalVars.whoseTurn.text = "X's"
+        }
     }
     
 }

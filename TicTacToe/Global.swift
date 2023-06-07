@@ -7,6 +7,7 @@
 
 import UIKit
 
+//global vars
 struct GlobalVars {
     static var turn = 0;
     static var turnLabel : UILabel = UILabel()
